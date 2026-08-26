@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #170a0d;
+  --color-surface: #241017;
+  --color-surface-hover: #3a1620;
+  --color-border: #5c2430;
+  --color-accent: #e4879e;
+  --color-text: #ffffff;
+  --color-text-muted: #d99aa8;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
