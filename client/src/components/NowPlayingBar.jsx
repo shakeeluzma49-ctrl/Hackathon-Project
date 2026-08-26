@@ -23,7 +23,16 @@ export default function NowPlayingBar({ track, isPlaying, onTogglePlay }) {
           className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black disabled:cursor-not-allowed disabled:opacity-30"
           title={hasAudio ? (isPlaying ? "Pause" : "Play") : "No audio file loaded yet"}
         >
-          {isPlaying ? "⏸" : "▶"}
+          {isPlaying ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="5" y="4" width="5" height="16" rx="1" />
+              <rect x="14" y="4" width="5" height="16" rx="1" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M6 4.5v15l14-7.5z" />
+            </svg>
+          )}
         </button>
       </div>
       <div className="hidden text-xs text-text-muted sm:block">
