@@ -1,7 +1,8 @@
-# Hackathon Project — Day Playlist
+# Aurora
 
-A Spotify-style app that builds a playlist from the time of day plus a free-text
-description of how your day is going.
+A playlist app that builds a mix from the time of day plus a free-text
+description of how your day is going. Aurora Borealis-themed: night-sky base,
+green/teal/violet aurora bands as the accent palette.
 
 Live on GitHub Pages: deploys automatically from `main` via
 `.github/workflows/deploy.yml`.

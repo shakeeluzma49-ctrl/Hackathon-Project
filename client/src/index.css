@@ -1,17 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #170a0d;
-  --color-surface: #241017;
-  --color-surface-hover: #3a1620;
-  --color-border: #5c2430;
-  --color-accent: #e4879e;
-  --color-text: #ffffff;
-  --color-text-muted: #d99aa8;
+  /* Night sky, tinted cool blue-violet — never pure black */
+  --color-bg: oklch(14% 0.02 260);
+  --color-surface: oklch(19% 0.03 260);
+  --color-surface-hover: oklch(25% 0.035 260);
+  --color-border: oklch(32% 0.04 260);
+  --color-text: oklch(96% 0.008 260);
+  --color-text-muted: oklch(72% 0.03 260);
+
+  /* Aurora bands — three named roles, each used deliberately */
+  --color-accent: oklch(78% 0.19 155); /* green — primary, interactive */
+  --color-accent-teal: oklch(75% 0.13 195); /* teal — secondary accent */
+  --color-accent-violet: oklch(68% 0.14 300); /* violet — atmosphere only, rare in UI */
+
+  --color-error: oklch(62% 0.18 25); /* warm red-orange, tinted to sit against the cool palette */
+
+  --font-display: "Instrument Serif", Georgia, serif;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-4%, 3%, 0) scale(1.08);
+  }
+}
+
+.aurora-band {
+  animation: aurora-drift 24s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-band {
+    animation: none;
+  }
 }

@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import Sidebar from "./components/Sidebar.jsx";
 import TrackRow from "./components/TrackRow.jsx";
-import NowPlayingBar from "./components/NowPlayingBar.jsx";
 import { fetchPlaylist } from "./api.js";
+
+const HEADLINE = {
+  morning: "Morning.\nEase in.",
+  afternoon: "Afternoon.\nKeep moving.",
+  evening: "Evening.\nWind toward something.",
+  night: "Late night,\nstill going?",
+};
 
 export default function App() {
   const [keywords, setKeywords] = useState("");
@@ -33,6 +38,10 @@ export default function App() {
   }
 
   function handleSelectTrack(track) {
+    if (activeTrack?.id === track.id) {
+      handleTogglePlay();
+      return;
+    }
     setActiveTrack(track);
     setIsPlaying(Boolean(track.url));
   }
@@ -48,64 +57,86 @@ export default function App() {
     else audioRef.current.pause();
   }, [isPlaying, activeTrack]);
 
-  return (
-    <div className="flex h-screen flex-col bg-bg text-text">
-      <div className="flex min-h-0 flex-1">
-        <Sidebar timeOfDay={playlist?.timeOfDay} />
+  const headline = HEADLINE[playlist?.timeOfDay] ?? "Building\nyour mix.";
+  const isLoading = status === "loading";
 
-        <main className="flex-1 overflow-y-auto p-6">
-          <form onSubmit={handleGenerate} className="mb-6 flex flex-col gap-3 sm:flex-row">
-            <input
-              type="text"
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-bg text-text">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="aurora-band absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-accent/20 blur-[110px]" />
+        <div
+          className="aurora-band absolute top-8 right-0 h-80 w-80 rounded-full bg-accent-teal/20 blur-[110px]"
+          style={{ animationDelay: "-8s" }}
+        />
+        <div
+          className="aurora-band absolute bottom-0 left-0 h-72 w-72 rounded-full bg-accent-violet/15 blur-[110px]"
+          style={{ animationDelay: "-16s" }}
+        />
+      </div>
+
+      <div className="relative mx-auto max-w-3xl px-6 py-10 sm:py-16">
+        <header className="mb-12 flex items-center justify-between text-xs uppercase tracking-[0.3em] text-text-muted">
+          <span>Aurora</span>
+          <span>
+            {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </span>
+        </header>
+
+        <section className="mb-12 grid gap-8 sm:grid-cols-[1.3fr_1fr] sm:items-end">
+          <h1 className="font-display whitespace-pre-line text-5xl leading-[1.05] italic sm:text-6xl">
+            {headline}
+          </h1>
+          <form onSubmit={handleGenerate} className="flex flex-col gap-3">
+            <label htmlFor="keywords" className="text-sm text-text-muted">
+              Tell it about your day
+            </label>
+            <textarea
+              id="keywords"
               value={keywords}
               onChange={(event) => setKeywords(event.target.value)}
-              placeholder="How's your day going? (e.g. stressed, hyped, chill study session)"
-              className="flex-1 rounded-full border border-border bg-surface px-4 py-2 text-sm outline-none placeholder:text-text-muted focus:border-accent"
+              placeholder="stressed, hyped, chill study session…"
+              rows={2}
+              className="resize-none rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none placeholder:text-text-muted focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/50"
             />
             <button
               type="submit"
-              className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-black hover:brightness-110"
+              disabled={isLoading}
+              className="self-start rounded-full bg-accent px-5 py-2 text-sm font-medium text-bg transition-[transform,filter] duration-150 ease-out hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Generate playlist
+              {isLoading ? "Building…" : "Build the mix"}
             </button>
           </form>
+        </section>
 
-          {status === "loading" && <p className="text-sm text-text-muted">Building your playlist…</p>}
-          {status === "error" && (
-            <p className="text-sm text-red-400">
-              Couldn't reach the playlist API — make sure the server is running on port 4000.
-            </p>
-          )}
+        {status === "error" && (
+          <p className="text-sm text-error">Something went wrong building the playlist.</p>
+        )}
 
-          {status === "ready" && playlist && (
-            <>
-              <div className="mb-4">
-                <h1 className="text-2xl font-bold capitalize">{playlist.timeOfDay} mix</h1>
-                {playlist.matchedMoods.length > 0 && (
-                  <p className="mt-1 text-sm text-text-muted">
-                    Matched moods: {playlist.matchedMoods.join(", ")}
-                  </p>
-                )}
-              </div>
+        {status === "ready" && playlist && (
+          <section>
+            {playlist.matchedMoods.length > 0 && (
+              <p className="mb-4 text-sm text-text-muted">
+                Matched: {playlist.matchedMoods.join(", ")}
+              </p>
+            )}
+            <ol>
+              {playlist.tracks.map((track, index) => (
+                <TrackRow
+                  key={track.id}
+                  track={track}
+                  index={index}
+                  isActive={activeTrack?.id === track.id}
+                  isPlaying={isPlaying && activeTrack?.id === track.id}
+                  onSelect={handleSelectTrack}
+                  onTogglePlay={handleTogglePlay}
+                />
+              ))}
+            </ol>
+          </section>
+        )}
 
-              <div className="flex flex-col gap-1">
-                {playlist.tracks.map((track, index) => (
-                  <TrackRow
-                    key={track.id}
-                    track={track}
-                    index={index}
-                    isActive={activeTrack?.id === track.id}
-                    onSelect={handleSelectTrack}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </main>
+        <audio ref={audioRef} src={activeTrack?.url || undefined} onEnded={() => setIsPlaying(false)} />
       </div>
-
-      <audio ref={audioRef} src={activeTrack?.url || undefined} onEnded={() => setIsPlaying(false)} />
-      <NowPlayingBar track={activeTrack} isPlaying={isPlaying} onTogglePlay={handleTogglePlay} />
     </div>
   );
 }
