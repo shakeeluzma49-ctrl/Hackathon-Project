@@ -3,8 +3,13 @@ export default function PlayerBar({ track, isPlaying, onTogglePlay, onPrev, onNe
 
   return (
     <div className="fixed inset-x-0 bottom-0 border-t border-border bg-surface">
-      <div className="mx-auto flex max-w-5xl items-center gap-4 px-6 py-3 sm:gap-6">
-        <div className="flex items-center gap-4 sm:gap-6">
+      <div className="mx-auto grid max-w-5xl grid-cols-3 items-center gap-4 px-6 py-3">
+        <div className="min-w-0">
+          <p className="truncate text-xs font-bold">{track ? track.title : "Nothing selected"}</p>
+          <p className="truncate text-[11px] text-text-muted">{track ? track.artist : "—"}</p>
+        </div>
+
+        <div className="flex items-center justify-center gap-4 sm:gap-6">
           <button
             type="button"
             onClick={onPrev}
@@ -49,10 +54,7 @@ export default function PlayerBar({ track, isPlaying, onTogglePlay, onPrev, onNe
           </button>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-bold">{track ? track.title : "Nothing selected"}</p>
-          <p className="truncate text-[11px] text-text-muted">{track ? track.artist : "—"}</p>
-        </div>
+        <div aria-hidden="true" />
       </div>
     </div>
   );

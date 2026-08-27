@@ -124,8 +124,12 @@ export default function App() {
         )}
 
         {status === "ready" && playlist && (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_300px]">
-            <section>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[300px_1fr]">
+            <aside className="md:pt-[38px] md:order-1">
+              <TrackDetailsPane track={activeTrack} />
+            </aside>
+
+            <section className="md:order-2">
               <div className="mb-3">
                 <div className="flex items-baseline justify-between">
                   <h1 className="text-lg font-bold tracking-tight">TONIGHT&apos;S MIX</h1>
@@ -147,10 +151,6 @@ export default function App() {
                 ))}
               </ol>
             </section>
-
-            <aside className="md:pt-[38px]">
-              <TrackDetailsPane track={activeTrack} />
-            </aside>
           </div>
         )}
 
