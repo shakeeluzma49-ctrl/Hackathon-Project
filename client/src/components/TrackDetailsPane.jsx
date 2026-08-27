@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 const EASE = [0.16, 1, 0.3, 1];
 
 function formatDuration(seconds) {
+  if (seconds == null) return "—";
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return `${m}:${s.toString().padStart(2, "0")}`;

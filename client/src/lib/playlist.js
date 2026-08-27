@@ -37,6 +37,7 @@ const SYNONYMS = {
   celebration: "party",
   nostalgic: "nostalgic",
   nostalgia: "nostalgic",
+  melancholy: "melancholy",
 };
 
 const TIME_TAGS = ["morning", "afternoon", "evening", "night"];

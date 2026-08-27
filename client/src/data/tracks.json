@@ -1,110 +1,12 @@
 [
-  {
-    "id": "t1",
-    "title": "Sunrise Drift",
-    "artist": "Nova Field",
-    "url": "",
-    "durationSec": 214,
-    "timeTags": ["morning"],
-    "moodTags": ["chill", "calm", "focus", "study"]
-  },
-  {
-    "id": "t2",
-    "title": "First Light",
-    "artist": "Coral & Bram",
-    "url": "",
-    "durationSec": 198,
-    "timeTags": ["morning"],
-    "moodTags": ["happy", "hopeful", "energize"]
-  },
-  {
-    "id": "t3",
-    "title": "Coffee Run",
-    "artist": "Little Static",
-    "url": "",
-    "durationSec": 176,
-    "timeTags": ["morning", "afternoon"],
-    "moodTags": ["happy", "upbeat", "hyped"]
-  },
-  {
-    "id": "t4",
-    "title": "Deadline Mode",
-    "artist": "Cursor Blink",
-    "url": "",
-    "durationSec": 231,
-    "timeTags": ["afternoon"],
-    "moodTags": ["stressed", "focus", "study", "hyped"]
-  },
-  {
-    "id": "t5",
-    "title": "Grind Set",
-    "artist": "Loop Theory",
-    "url": "",
-    "durationSec": 189,
-    "timeTags": ["afternoon"],
-    "moodTags": ["hyped", "energize", "party"]
-  },
-  {
-    "id": "t6",
-    "title": "Low Battery",
-    "artist": "Dial Tone",
-    "url": "",
-    "durationSec": 205,
-    "timeTags": ["afternoon", "evening"],
-    "moodTags": ["stressed", "tired", "calm"]
-  },
-  {
-    "id": "t7",
-    "title": "Golden Hour Static",
-    "artist": "Nova Field",
-    "url": "",
-    "durationSec": 220,
-    "timeTags": ["evening"],
-    "moodTags": ["chill", "happy", "nostalgic"]
-  },
-  {
-    "id": "t8",
-    "title": "Wind Down",
-    "artist": "Soft Focus",
-    "url": "",
-    "durationSec": 240,
-    "timeTags": ["evening", "night"],
-    "moodTags": ["calm", "chill", "sad", "tired"]
-  },
-  {
-    "id": "t9",
-    "title": "After Hours",
-    "artist": "Loop Theory",
-    "url": "",
-    "durationSec": 212,
-    "timeTags": ["evening", "night"],
-    "moodTags": ["party", "hyped", "happy"]
-  },
-  {
-    "id": "t10",
-    "title": "Midnight Circuit",
-    "artist": "Dial Tone",
-    "url": "",
-    "durationSec": 255,
-    "timeTags": ["night"],
-    "moodTags": ["focus", "study", "calm"]
-  },
-  {
-    "id": "t11",
-    "title": "Empty Streets",
-    "artist": "Coral & Bram",
-    "url": "",
-    "durationSec": 230,
-    "timeTags": ["night"],
-    "moodTags": ["sad", "nostalgic", "calm"]
-  },
-  {
-    "id": "t12",
-    "title": "Reset Button",
-    "artist": "Little Static",
-    "url": "",
-    "durationSec": 200,
-    "timeTags": ["morning", "night"],
-    "moodTags": ["hopeful", "calm", "energize"]
-  }
+  { "id": "melancholy-1", "title": "Drag Path", "artist": "twenty one pilots", "url": "", "durationSec": null, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-2", "title": "Let Down", "artist": "Radiohead", "url": "", "durationSec": null, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-3", "title": "I'll Believe In Anything", "artist": "Wolf Parade", "url": "", "durationSec": null, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-4", "title": "Scott Street", "artist": "Phoebe Bridgers", "url": "", "durationSec": null, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-5", "title": "welcome and goodbye", "artist": "Dream, Ivory", "url": "", "durationSec": 141, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-6", "title": "Washing Machine Heart", "artist": "Mitski", "url": "", "durationSec": 129, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-7", "title": "Wasted Summers", "artist": "juju<3", "url": "", "durationSec": null, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-8", "title": "I Know The End", "artist": "Phoebe Bridgers", "url": "", "durationSec": null, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-9", "title": "Bags", "artist": "Clairo", "url": "", "durationSec": 261, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] },
+  { "id": "melancholy-10", "title": "The Cut That Always Bleeds", "artist": "Conan Gray", "url": "", "durationSec": 232, "timeTags": ["evening", "night"], "moodTags": ["melancholy", "sad"] }
 ]
