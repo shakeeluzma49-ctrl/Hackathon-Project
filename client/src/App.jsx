@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import TrackRow from "./components/TrackRow.jsx";
 import TrackDetailsPane from "./components/TrackDetailsPane.jsx";
 import PlayerBar from "./components/PlayerBar.jsx";
 import AuroraTrace from "./components/AuroraTrace.jsx";
 import SplashScreen from "./components/SplashScreen.jsx";
-import { fetchPlaylist } from "./api.js";
+import { createPlaylist, fetchPlaylist } from "./api.js";
 import bgImage from "./assets/aurora-bg.jpg";
 
 const bgStyle = {
@@ -12,6 +13,18 @@ const bgStyle = {
   backgroundSize: "cover",
   backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
+};
+
+const EASE = [0.16, 1, 0.3, 1];
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
 };
 
 const READING = {
@@ -24,10 +37,10 @@ const READING = {
 export default function App() {
   const [started, setStarted] = useState(false);
   const [keywords, setKeywords] = useState("");
-  const [playlist, setPlaylist] = useState(null);
+  const [playlist, setPlaylist] = useState(() => createPlaylist({ keywords: "" }));
   const [activeTrack, setActiveTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [status, setStatus] = useState("loading");
+  const [status, setStatus] = useState("ready");
   const audioRef = useRef(null);
 
   async function loadPlaylist(nextKeywords) {
@@ -40,10 +53,6 @@ export default function App() {
       setStatus("error");
     }
   }
-
-  useEffect(() => {
-    loadPlaylist("");
-  }, []);
 
   function handleGenerate(event) {
     event.preventDefault();
@@ -78,101 +87,140 @@ export default function App() {
   const isLoading = status === "loading";
   const canNavigate = Boolean(playlist?.tracks?.length && activeTrack);
 
-  if (!started) {
-    return <SplashScreen onContinue={() => setStarted(true)} />;
-  }
-
   return (
-    <div className="min-h-screen bg-bg pb-32 text-text" style={bgStyle}>
-      <div className="mx-auto max-w-5xl px-6 py-8 sm:py-12">
-        <header className="mb-6 pb-3">
-          <div className="flex items-baseline justify-between text-xs tracking-[0.2em] text-text-muted">
-            <span className="font-bold text-text">AURORA</span>
-            <span>
-              {new Date().toLocaleDateString([], { month: "short", day: "2-digit" })} —{" "}
-              {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-            </span>
-          </div>
-          <div className="aurora-rule mt-3 h-[3px] w-full rounded-full" />
-        </header>
-
-        <form
-          onSubmit={handleGenerate}
-          className="mb-6 flex flex-col gap-3 rounded-xl border border-border bg-surface/85 px-4 py-3 backdrop-blur-md sm:flex-row sm:items-center"
+    <AnimatePresence mode="wait">
+      {!started ? (
+        <SplashScreen key="splash" onContinue={() => setStarted(true)} />
+      ) : (
+        <motion.div
+          key="app"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, ease: EASE }}
+          className="min-h-screen bg-bg pb-32 text-text"
+          style={bgStyle}
         >
-          <label htmlFor="keywords" className="shrink-0 text-xs tracking-[0.15em] text-text-muted">
-            {reading}
-          </label>
-          <input
-            id="keywords"
-            type="text"
-            value={keywords}
-            onChange={(event) => setKeywords(event.target.value)}
-            placeholder="how's the day going? (stressed, hyped, chill study session…)"
-            className="min-w-0 flex-1 rounded-md bg-transparent text-sm outline-none placeholder:text-text-muted focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent"
-          />
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="shrink-0 rounded-full border border-accent bg-accent px-4 py-1.5 text-xs tracking-[0.1em] text-on-accent transition-[transform,filter] duration-150 ease-out hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="mx-auto max-w-5xl px-6 py-8 sm:py-12"
           >
-            {isLoading ? "READING…" : "BUILD MIX"}
-          </button>
-        </form>
-
-        <div className="mb-8">
-          <p className="mb-1 text-[11px] tracking-[0.15em] text-text-muted">
-            AURORA ACTIVITY — TONIGHT
-          </p>
-          <AuroraTrace />
-        </div>
-
-        {status === "error" && (
-          <p className="text-sm text-error">Something went wrong building the playlist.</p>
-        )}
-
-        {status === "ready" && playlist && (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-[300px_1fr]">
-            <aside className="md:pt-[38px] md:order-1">
-              <TrackDetailsPane track={activeTrack} />
-            </aside>
-
-            <section className="rounded-xl border border-border bg-surface/85 px-4 py-4 backdrop-blur-md md:order-2">
-              <div className="mb-3">
-                <div className="flex items-baseline justify-between">
-                  <h1 className="text-lg font-bold tracking-tight">TONIGHT&apos;S MIX</h1>
-                  {playlist.matchedMoods.length > 0 && (
-                    <p className="text-xs text-text-muted">{playlist.matchedMoods.join(" · ")}</p>
-                  )}
-                </div>
-                <div className="aurora-rule mt-2 h-[3px] w-full rounded-full" />
+            <motion.header variants={fadeUp} className="mb-6 pb-3">
+              <div className="flex items-baseline justify-between text-xs tracking-[0.2em] text-text-muted">
+                <span className="font-bold text-text">AURORA</span>
+                <span>
+                  {new Date().toLocaleDateString([], { month: "short", day: "2-digit" })} —{" "}
+                  {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </span>
               </div>
-              <ol>
-                {playlist.tracks.map((track, index) => (
-                  <TrackRow
-                    key={track.id}
-                    track={track}
-                    index={index}
-                    isActive={activeTrack?.id === track.id}
-                    onSelect={selectTrack}
-                  />
-                ))}
-              </ol>
-            </section>
-          </div>
-        )}
+              <div className="aurora-rule mt-3 h-[3px] w-full rounded-full" />
+            </motion.header>
 
-        <audio ref={audioRef} src={activeTrack?.url || undefined} onEnded={() => setIsPlaying(false)} />
-      </div>
+            <motion.form
+              variants={fadeUp}
+              onSubmit={handleGenerate}
+              className="mb-6 flex flex-col gap-3 rounded-xl border border-border bg-surface/85 px-4 py-3 backdrop-blur-md sm:flex-row sm:items-center"
+            >
+              <label htmlFor="keywords" className="shrink-0 text-xs tracking-[0.15em] text-text-muted">
+                {reading}
+              </label>
+              <input
+                id="keywords"
+                type="text"
+                value={keywords}
+                onChange={(event) => setKeywords(event.target.value)}
+                placeholder="stressed, hyped, chill study..."
+                className="min-w-0 flex-1 rounded-md bg-transparent text-sm outline-none placeholder:text-text-muted focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent"
+              />
+              <motion.button
+                type="submit"
+                disabled={isLoading}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.15, ease: EASE }}
+                className="shrink-0 rounded-full border border-accent bg-accent px-4 py-1.5 text-xs tracking-[0.1em] text-on-accent hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isLoading ? "READING…" : "BUILD MIX"}
+              </motion.button>
+            </motion.form>
 
-      <PlayerBar
-        track={activeTrack}
-        isPlaying={isPlaying}
-        onTogglePlay={handleTogglePlay}
-        onPrev={() => stepTrack(-1)}
-        onNext={() => stepTrack(1)}
-        canNavigate={canNavigate}
-      />
-    </div>
+            <motion.div variants={fadeUp} className="mb-8">
+              <p className="mb-1 text-[11px] tracking-[0.15em] text-text-muted">
+                AURORA ACTIVITY — TONIGHT
+              </p>
+              <AuroraTrace />
+            </motion.div>
+
+            {status === "error" && (
+              <motion.p variants={fadeUp} className="text-sm text-error">
+                Something went wrong building the playlist.
+              </motion.p>
+            )}
+
+            <AnimatePresence mode="wait">
+              {status === "ready" && playlist && (
+                <motion.div
+                  key={`${playlist.timeOfDay}-${playlist.matchedMoods.join(",")}`}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35, ease: EASE }}
+                  className="grid grid-cols-1 gap-6 md:grid-cols-[300px_1fr]"
+                >
+                  <aside className="md:order-1 md:pt-[38px]">
+                    <TrackDetailsPane track={activeTrack} />
+                  </aside>
+
+                  <section className="rounded-xl border border-border bg-surface/85 px-4 py-4 backdrop-blur-md md:order-2">
+                    <div className="mb-3">
+                      <div className="flex items-baseline justify-between">
+                        <h1 className="text-lg font-bold tracking-tight">TONIGHT&apos;S MIX</h1>
+                        {playlist.matchedMoods.length > 0 && (
+                          <p className="text-xs text-text-muted">
+                            {playlist.matchedMoods.join(" · ")}
+                          </p>
+                        )}
+                      </div>
+                      <div className="aurora-rule mt-2 h-[3px] w-full rounded-full" />
+                    </div>
+                    <motion.ol
+                      variants={container}
+                      initial="hidden"
+                      animate="show"
+                    >
+                      {playlist.tracks.map((track, index) => (
+                        <TrackRow
+                          key={track.id}
+                          track={track}
+                          index={index}
+                          isActive={activeTrack?.id === track.id}
+                          onSelect={selectTrack}
+                        />
+                      ))}
+                    </motion.ol>
+                  </section>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <audio
+              ref={audioRef}
+              src={activeTrack?.url || undefined}
+              onEnded={() => setIsPlaying(false)}
+            />
+          </motion.div>
+
+          <PlayerBar
+            track={activeTrack}
+            isPlaying={isPlaying}
+            onTogglePlay={handleTogglePlay}
+            onPrev={() => stepTrack(-1)}
+            onNext={() => stepTrack(1)}
+            canNavigate={canNavigate}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

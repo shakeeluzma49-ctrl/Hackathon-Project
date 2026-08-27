@@ -1,18 +1,27 @@
+import { motion } from "framer-motion";
+
 function formatDuration(seconds) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
+const item = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } },
+};
+
 export default function TrackRow({ track, index, isActive, onSelect }) {
   const hasAudio = Boolean(track.url);
 
   return (
-    <li className="border-b border-border last:border-b-0">
-      <button
+    <motion.li variants={item} className="border-b border-border last:border-b-0">
+      <motion.button
         type="button"
         onClick={() => onSelect(track)}
-        className={`grid w-full grid-cols-[3rem_1fr_auto] items-baseline gap-4 py-3 text-left transition-colors hover:bg-surface-hover/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
+        className={`grid w-full grid-cols-[3rem_1fr_auto] items-baseline gap-4 rounded-md py-3 text-left transition-colors hover:bg-surface-hover/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
           isActive ? "bg-surface-hover/60" : ""
         }`}
       >
@@ -35,7 +44,7 @@ export default function TrackRow({ track, index, isActive, onSelect }) {
           )}
           <span className="tabular-nums">{formatDuration(track.durationSec)}</span>
         </span>
-      </button>
-    </li>
+      </motion.button>
+    </motion.li>
   );
 }

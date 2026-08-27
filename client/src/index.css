@@ -10,7 +10,7 @@
   --color-text-muted: oklch(80% 0.02 260);
 
   /* Aurora bands, tuned bright for dark/photo backdrop */
-  --color-accent: oklch(78% 0.19 155); /* green — primary, interactive */
+  --color-accent: oklch(72% 0.17 250); /* blue — primary, interactive */
   --color-accent-teal: oklch(75% 0.13 195); /* teal — secondary accent */
   --color-accent-violet: oklch(70% 0.14 300); /* violet — activity trace only */
 
