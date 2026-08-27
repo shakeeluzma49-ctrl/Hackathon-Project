@@ -20,6 +20,14 @@ export default function AuroraTrace() {
         strokeWidth="1.5"
         className="aurora-trace-path is-delayed"
       />
+      <path
+        d="M0,22 L20,28 L40,20 L60,24 L80,16 L100,26 L120,20 L140,30 L160,18 L180,24 L200,20 L220,26 L240,16 L260,22 L280,28 L300,18 L320,24 L340,20 L360,28 L380,18 L400,24"
+        fill="none"
+        stroke="var(--color-accent-violet)"
+        strokeWidth="1"
+        opacity="0.7"
+        className="aurora-trace-path is-more-delayed"
+      />
     </svg>
   );
 }
