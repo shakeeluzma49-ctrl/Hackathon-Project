@@ -75,7 +75,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-bg pb-24 text-text">
+    <div className="min-h-screen bg-bg pb-32 text-text">
       <div className="mx-auto max-w-5xl px-6 py-8 sm:py-12">
         <header className="mb-6 pb-3">
           <div className="flex items-baseline justify-between text-xs tracking-[0.2em] text-text-muted">
