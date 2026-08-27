@@ -2,7 +2,7 @@ export default function PlayerBar({ track, isPlaying, onTogglePlay, onPrev, onNe
   const hasAudio = Boolean(track?.url);
 
   return (
-    <div className="fixed inset-x-0 bottom-0 border-t border-border bg-surface">
+    <div className="fixed inset-x-0 bottom-0 border-t border-border bg-surface/85 backdrop-blur-md">
       <div className="mx-auto grid max-w-5xl grid-cols-3 items-center gap-4 px-6 py-5">
         <div className="min-w-0">
           <p className="truncate text-sm font-bold">{track ? track.title : "Nothing selected"}</p>

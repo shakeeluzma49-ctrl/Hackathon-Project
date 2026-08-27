@@ -5,6 +5,14 @@ import PlayerBar from "./components/PlayerBar.jsx";
 import AuroraTrace from "./components/AuroraTrace.jsx";
 import SplashScreen from "./components/SplashScreen.jsx";
 import { fetchPlaylist } from "./api.js";
+import bgImage from "./assets/aurora-bg.jpg";
+
+const bgStyle = {
+  backgroundImage: `linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url(${bgImage})`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+};
 
 const READING = {
   morning: "MORNING READING",
@@ -75,7 +83,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-bg pb-32 text-text">
+    <div className="min-h-screen bg-bg pb-32 text-text" style={bgStyle}>
       <div className="mx-auto max-w-5xl px-6 py-8 sm:py-12">
         <header className="mb-6 pb-3">
           <div className="flex items-baseline justify-between text-xs tracking-[0.2em] text-text-muted">
@@ -90,7 +98,7 @@ export default function App() {
 
         <form
           onSubmit={handleGenerate}
-          className="mb-6 flex flex-col gap-3 rounded-xl border border-border bg-surface px-4 py-3 sm:flex-row sm:items-center"
+          className="mb-6 flex flex-col gap-3 rounded-xl border border-border bg-surface/85 px-4 py-3 backdrop-blur-md sm:flex-row sm:items-center"
         >
           <label htmlFor="keywords" className="shrink-0 text-xs tracking-[0.15em] text-text-muted">
             {reading}
@@ -129,7 +137,7 @@ export default function App() {
               <TrackDetailsPane track={activeTrack} />
             </aside>
 
-            <section className="md:order-2">
+            <section className="rounded-xl border border-border bg-surface/85 px-4 py-4 backdrop-blur-md md:order-2">
               <div className="mb-3">
                 <div className="flex items-baseline justify-between">
                   <h1 className="text-lg font-bold tracking-tight">TONIGHT&apos;S MIX</h1>

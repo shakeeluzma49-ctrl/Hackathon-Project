@@ -7,7 +7,7 @@ function formatDuration(seconds) {
 export default function TrackDetailsPane({ track }) {
   if (!track) {
     return (
-      <div className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-text-muted">
+      <div className="rounded-xl border border-dashed border-border bg-surface/60 px-4 py-6 text-center text-sm text-text-muted backdrop-blur-md">
         Select a track to see its details.
       </div>
     );
@@ -16,7 +16,7 @@ export default function TrackDetailsPane({ track }) {
   const hasAudio = Boolean(track.url);
 
   return (
-    <div className="rounded-xl border border-border bg-surface px-4 py-5">
+    <div className="rounded-xl border border-border bg-surface/85 px-4 py-5 backdrop-blur-md">
       <p className="mb-1 text-[11px] tracking-[0.15em] text-text-muted">TRACK DETAILS</p>
       <h2 className="mb-1 text-xl font-bold">{track.title}</h2>
       <p className="mb-4 text-sm text-text-muted">{track.artist}</p>

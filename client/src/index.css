@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  /* Cream paper, tinted warm — never pure white */
-  --color-bg: oklch(96% 0.014 85);
-  --color-surface: oklch(93% 0.016 85);
-  --color-surface-hover: oklch(89% 0.018 85);
-  --color-border: oklch(78% 0.02 85);
-  --color-text: oklch(22% 0.02 85); /* ink */
-  --color-text-muted: oklch(46% 0.02 85);
+  /* Dark fallback (pre-photo-load), tinted cool blue-violet */
+  --color-bg: oklch(14% 0.02 260);
+  --color-surface: oklch(16% 0.025 260);
+  --color-surface-hover: oklch(22% 0.03 260);
+  --color-border: oklch(55% 0.02 260);
+  --color-text: oklch(96% 0.008 260);
+  --color-text-muted: oklch(80% 0.02 260);
 
-  /* Aurora bands, tuned dark enough to read on light paper */
-  --color-accent: oklch(48% 0.13 155); /* green — primary, interactive */
-  --color-accent-teal: oklch(46% 0.1 195); /* teal — secondary accent */
-  --color-accent-violet: oklch(44% 0.11 300); /* violet — activity trace only */
+  /* Aurora bands, tuned bright for dark/photo backdrop */
+  --color-accent: oklch(78% 0.19 155); /* green — primary, interactive */
+  --color-accent-teal: oklch(75% 0.13 195); /* teal — secondary accent */
+  --color-accent-violet: oklch(70% 0.14 300); /* violet — activity trace only */
 
-  --color-error: oklch(42% 0.15 25);
-  --color-on-accent: oklch(98% 0.01 85); /* text sitting on an accent-colored surface */
+  --color-error: oklch(70% 0.18 25);
+  --color-on-accent: oklch(14% 0.02 260); /* text sitting on an accent-colored surface */
 
   --font-mono: "Courier Prime", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 }
