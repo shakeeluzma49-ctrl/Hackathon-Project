@@ -1,46 +1,50 @@
 @import "tailwindcss";
 
 @theme {
-  /* Night sky, tinted cool blue-violet — never pure black */
-  --color-bg: oklch(14% 0.02 260);
-  --color-surface: oklch(19% 0.03 260);
-  --color-surface-hover: oklch(25% 0.035 260);
-  --color-border: oklch(32% 0.04 260);
-  --color-text: oklch(96% 0.008 260);
-  --color-text-muted: oklch(72% 0.03 260);
+  /* Cream paper, tinted warm — never pure white */
+  --color-bg: oklch(96% 0.014 85);
+  --color-surface: oklch(93% 0.016 85);
+  --color-surface-hover: oklch(89% 0.018 85);
+  --color-border: oklch(78% 0.02 85);
+  --color-text: oklch(22% 0.02 85); /* ink */
+  --color-text-muted: oklch(46% 0.02 85);
 
-  /* Aurora bands — three named roles, each used deliberately */
-  --color-accent: oklch(78% 0.19 155); /* green — primary, interactive */
-  --color-accent-teal: oklch(75% 0.13 195); /* teal — secondary accent */
-  --color-accent-violet: oklch(68% 0.14 300); /* violet — atmosphere only, rare in UI */
+  /* Aurora bands, tuned dark enough to read on light paper */
+  --color-accent: oklch(48% 0.13 155); /* green — primary, interactive */
+  --color-accent-teal: oklch(46% 0.1 195); /* teal — secondary accent */
+  --color-accent-violet: oklch(44% 0.11 300); /* violet — activity trace only */
 
-  --color-error: oklch(62% 0.18 25); /* warm red-orange, tinted to sit against the cool palette */
+  --color-error: oklch(42% 0.15 25);
+  --color-on-accent: oklch(98% 0.01 85); /* text sitting on an accent-colored surface */
 
-  --font-display: "Instrument Serif", Georgia, serif;
+  --font-mono: "Courier Prime", "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 }
 
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-mono);
 }
 
-@keyframes aurora-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(-4%, 3%, 0) scale(1.08);
-  }
+.aurora-trace-path {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: aurora-trace-draw 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.aurora-band {
-  animation: aurora-drift 24s ease-in-out infinite;
+.aurora-trace-path.is-delayed {
+  animation-delay: 0.2s;
+}
+
+@keyframes aurora-trace-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora-band {
+  .aurora-trace-path {
     animation: none;
+    stroke-dashoffset: 0;
   }
 }

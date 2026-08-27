@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import TrackRow from "./components/TrackRow.jsx";
+import AuroraTrace from "./components/AuroraTrace.jsx";
 import { fetchPlaylist } from "./api.js";
 
-const HEADLINE = {
-  morning: "Morning.\nEase in.",
-  afternoon: "Afternoon.\nKeep moving.",
-  evening: "Evening.\nWind toward something.",
-  night: "Late night,\nstill going?",
+const READING = {
+  morning: "MORNING READING",
+  afternoon: "AFTERNOON READING",
+  evening: "EVENING READING",
+  night: "NIGHT READING",
 };
 
 export default function App() {
@@ -57,56 +58,53 @@ export default function App() {
     else audioRef.current.pause();
   }, [isPlaying, activeTrack]);
 
-  const headline = HEADLINE[playlist?.timeOfDay] ?? "Building\nyour mix.";
+  const reading = READING[playlist?.timeOfDay] ?? "READING";
   const isLoading = status === "loading";
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-bg text-text">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="aurora-band absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-accent/20 blur-[110px]" />
-        <div
-          className="aurora-band absolute top-8 right-0 h-80 w-80 rounded-full bg-accent-teal/20 blur-[110px]"
-          style={{ animationDelay: "-8s" }}
-        />
-        <div
-          className="aurora-band absolute bottom-0 left-0 h-72 w-72 rounded-full bg-accent-violet/15 blur-[110px]"
-          style={{ animationDelay: "-16s" }}
-        />
-      </div>
-
-      <div className="relative mx-auto max-w-3xl px-6 py-10 sm:py-16">
-        <header className="mb-12 flex items-center justify-between text-xs uppercase tracking-[0.3em] text-text-muted">
-          <span>Aurora</span>
+    <div className="min-h-screen bg-bg text-text">
+      <div className="mx-auto max-w-3xl px-6 py-8 sm:py-12">
+        <header className="mb-6 flex items-baseline justify-between border-b border-border pb-3 text-xs tracking-[0.2em] text-text-muted">
+          <span className="font-bold text-text">AURORA</span>
           <span>
+            {new Date().toLocaleDateString([], { month: "short", day: "2-digit" })} —{" "}
             {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </span>
         </header>
 
-        <section className="mb-12 grid gap-8 sm:grid-cols-[1.3fr_1fr] sm:items-end">
-          <h1 className="font-display whitespace-pre-line text-5xl leading-[1.05] italic sm:text-6xl">
-            {headline}
-          </h1>
-          <form onSubmit={handleGenerate} className="flex flex-col gap-3">
-            <label htmlFor="keywords" className="text-sm text-text-muted">
-              Tell it about your day
-            </label>
-            <textarea
-              id="keywords"
-              value={keywords}
-              onChange={(event) => setKeywords(event.target.value)}
-              placeholder="stressed, hyped, chill study session…"
-              rows={2}
-              className="resize-none rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none placeholder:text-text-muted focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/50"
-            />
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="self-start rounded-full bg-accent px-5 py-2 text-sm font-medium text-bg transition-[transform,filter] duration-150 ease-out hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isLoading ? "Building…" : "Build the mix"}
-            </button>
-          </form>
-        </section>
+        <form
+          onSubmit={handleGenerate}
+          className="mb-6 flex flex-col gap-3 border border-border bg-surface px-4 py-3 sm:flex-row sm:items-center"
+        >
+          <label
+            htmlFor="keywords"
+            className="shrink-0 text-xs tracking-[0.15em] text-text-muted"
+          >
+            {reading}
+          </label>
+          <input
+            id="keywords"
+            type="text"
+            value={keywords}
+            onChange={(event) => setKeywords(event.target.value)}
+            placeholder="how's the day going? (stressed, hyped, chill study session…)"
+            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-text-muted focus-visible:outline focus-visible:outline-1 focus-visible:outline-accent"
+          />
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="shrink-0 rounded-none border border-accent bg-accent px-4 py-1.5 text-xs tracking-[0.1em] text-on-accent transition-[transform,filter] duration-150 ease-out hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isLoading ? "READING…" : "BUILD MIX"}
+          </button>
+        </form>
+
+        <div className="mb-8">
+          <p className="mb-1 text-[11px] tracking-[0.15em] text-text-muted">
+            AURORA ACTIVITY — TONIGHT
+          </p>
+          <AuroraTrace />
+        </div>
 
         {status === "error" && (
           <p className="text-sm text-error">Something went wrong building the playlist.</p>
@@ -114,11 +112,12 @@ export default function App() {
 
         {status === "ready" && playlist && (
           <section>
-            {playlist.matchedMoods.length > 0 && (
-              <p className="mb-4 text-sm text-text-muted">
-                Matched: {playlist.matchedMoods.join(", ")}
-              </p>
-            )}
+            <div className="mb-3 flex items-baseline justify-between border-b border-border pb-2">
+              <h1 className="text-lg font-bold tracking-tight">TONIGHT&apos;S MIX</h1>
+              {playlist.matchedMoods.length > 0 && (
+                <p className="text-xs text-text-muted">{playlist.matchedMoods.join(" · ")}</p>
+              )}
+            </div>
             <ol>
               {playlist.tracks.map((track, index) => (
                 <TrackRow
