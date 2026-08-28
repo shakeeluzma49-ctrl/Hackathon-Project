@@ -38,9 +38,7 @@ body {
 .aurora-trace-path {
   stroke-dasharray: 1200;
   stroke-dashoffset: 1200;
-  animation:
-    aurora-trace-draw 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-    aurora-trace-shift 1s steps(12, end) 1.4s infinite;
+  animation: aurora-trace-draw 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .aurora-trace-path.is-delayed {
@@ -57,27 +55,10 @@ body {
   }
 }
 
-@keyframes aurora-trace-shift {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  25% {
-    transform: translateY(-1px);
-  }
-  50% {
-    transform: translateY(1px);
-  }
-  75% {
-    transform: translateY(-2px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .aurora-trace-path {
     animation: none;
     stroke-dashoffset: 0;
-    transform: none;
   }
 }
 
