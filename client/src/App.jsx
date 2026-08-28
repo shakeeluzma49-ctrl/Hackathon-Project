@@ -40,6 +40,9 @@ export default function App() {
   const [playlist, setPlaylist] = useState(() => createPlaylist({ keywords: "" }));
   const [activeTrack, setActiveTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
+  const [progress, setProgress] = useState({ current: 0, duration: 0 });
   const [status, setStatus] = useState("ready");
   const playerFrameRef = useRef(null);
 
@@ -61,24 +64,37 @@ export default function App() {
 
   function selectTrack(track) {
     setActiveTrack(track);
-    setIsPlaying(false);
+    setProgress({ current: 0, duration: track.durationSec ?? 0 });
+    setIsPlaying(Boolean(track.youtubeId));
+  }
+
+  function sendPlayerCommand(func, args = []) {
+    playerFrameRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func, args }),
+      "https://www.youtube.com",
+    );
   }
 
   function handleTogglePlay() {
     if (!activeTrack?.youtubeId || !playerFrameRef.current?.contentWindow) return;
     const nextPlaying = !isPlaying;
-    playerFrameRef.current.contentWindow.postMessage(
-      JSON.stringify({ event: "command", func: nextPlaying ? "playVideo" : "pauseVideo", args: [] }),
-      "https://www.youtube.com",
-    );
+    sendPlayerCommand(nextPlaying ? "playVideo" : "pauseVideo");
     setIsPlaying(nextPlaying);
+  }
+
+  function handleSeek(event) {
+    const nextTime = Number(event.target.value);
+    setProgress((current) => ({ ...current, current: nextTime }));
+    sendPlayerCommand("seekTo", [nextTime, true]);
   }
 
   function stepTrack(direction) {
     if (!playlist || !activeTrack) return;
     const tracks = playlist.tracks;
     const currentIndex = tracks.findIndex((t) => t.id === activeTrack.id);
-    const nextIndex = (currentIndex + direction + tracks.length) % tracks.length;
+    const nextIndex = isShuffle && direction > 0
+      ? Math.floor(Math.random() * tracks.length)
+      : (currentIndex + direction + tracks.length) % tracks.length;
     selectTrack(tracks[nextIndex]);
   }
 
@@ -89,7 +105,25 @@ export default function App() {
         const data = JSON.parse(event.data);
         if (data.event !== "infoDelivery") return;
         const playerState = data.info?.playerState;
-        if (playerState === 0 || playerState === 2) setIsPlaying(false);
+        const currentTime = Number(data.info?.currentTime);
+        const duration = Number(data.info?.duration);
+        if (Number.isFinite(currentTime) || Number.isFinite(duration)) {
+          setProgress((current) => ({
+            current: Number.isFinite(currentTime) ? currentTime : current.current,
+            duration: Number.isFinite(duration) && duration > 0 ? duration : current.duration,
+          }));
+        }
+        if (playerState === 0) {
+          if (isRepeat) {
+            sendPlayerCommand("seekTo", [0, true]);
+            sendPlayerCommand("playVideo");
+            setProgress((current) => ({ ...current, current: 0 }));
+            setIsPlaying(true);
+          } else {
+            setIsPlaying(false);
+          }
+        }
+        if (playerState === 2) setIsPlaying(false);
         if (playerState === 1) setIsPlaying(true);
       } catch {
         // Ignore unrelated postMessage events.
@@ -97,7 +131,18 @@ export default function App() {
     }
     window.addEventListener("message", handlePlayerMessage);
     return () => window.removeEventListener("message", handlePlayerMessage);
-  }, []);
+  }, [isRepeat]);
+
+  useEffect(() => {
+    if (!isPlaying) return undefined;
+    const timer = window.setInterval(() => {
+      setProgress((current) => {
+        if (!current.duration || current.current >= current.duration) return current;
+        return { ...current, current: Math.min(current.current + 1, current.duration) };
+      });
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [isPlaying]);
 
   const reading = READING[playlist?.timeOfDay] ?? "READING";
   const isLoading = status === "loading";
@@ -224,9 +269,10 @@ export default function App() {
               <iframe
                 ref={playerFrameRef}
                 title={`${activeTrack.title} by ${activeTrack.artist}`}
-                src={`https://www.youtube.com/embed/${activeTrack.youtubeId}?enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}&playsinline=1&controls=1&rel=0`}
+                src={`https://www.youtube.com/embed/${activeTrack.youtubeId}?enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}&playsinline=1&autoplay=1&controls=1&rel=0`}
                 className="pointer-events-none absolute bottom-24 right-4 h-[200px] w-[200px] opacity-0"
                 allow="autoplay; encrypted-media"
+                onLoad={() => sendPlayerCommand("playVideo")}
               />
             )}
           </motion.div>
@@ -239,6 +285,13 @@ export default function App() {
             onNext={() => stepTrack(1)}
             canNavigate={canNavigate}
             canPlay={Boolean(activeTrack?.youtubeId)}
+            currentTime={progress.current}
+            duration={progress.duration}
+            onSeek={handleSeek}
+            isShuffle={isShuffle}
+            isRepeat={isRepeat}
+            onToggleShuffle={() => setIsShuffle((current) => !current)}
+            onToggleRepeat={() => setIsRepeat((current) => !current)}
           />
         </motion.div>
       )}

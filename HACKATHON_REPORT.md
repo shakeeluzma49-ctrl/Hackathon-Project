@@ -118,7 +118,9 @@ The details panel shows album cover, title, artist, duration, time tags, mood ta
 
 ### Player controls
 
-The player bar includes previous, play/pause, and next controls. Navigation works through the generated mix. Play/pause commands are sent to the official YouTube embedded player while the app keeps its custom player interface.
+The player bar includes autoplay, previous, play/pause, next, repeat, shuffle, and a seekable duration bar. Selecting a track starts it automatically through the official YouTube embedded player. Navigation works through the generated mix, while repeat and shuffle change the playback behavior without changing the curated catalog.
+
+The player bar also uses the selected album cover as a blurred ambient light layer, making the player visually react to the active song.
 
 ## Visual Design
 
