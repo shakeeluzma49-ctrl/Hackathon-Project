@@ -13,7 +13,11 @@ const LAYERS = [
 function buildPath(base, amplitude, phase, frame) {
   return Array.from({ length: POINTS }, (_, index) => {
     const x = (WIDTH / (POINTS - 1)) * index;
-    const y = base + Math.sin(index * 1.7 + phase + frame * 0.7) * amplitude;
+    const direction = index % 2 === 0 ? -1 : 1;
+    const modulation = 0.55 + 0.45 * ((Math.sin(index * 1.9 + phase + frame * 0.8) + 1) / 2);
+    const y = index === 0 || index === POINTS - 1
+      ? base
+      : base + direction * amplitude * modulation;
     return `${index === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
   }).join(" ");
 }
