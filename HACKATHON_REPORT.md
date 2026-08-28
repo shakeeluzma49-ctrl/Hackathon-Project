@@ -1,0 +1,246 @@
+# Aurora
+
+## Hackathon Project Report
+
+Aurora is an emotion-aware playlist generator. A user describes how they feel in natural language, and the app interprets the words to build a short music mix from the matching emotion playlist.
+
+## The Problem
+
+Choosing music that matches a current emotional state takes time. Users may know how they feel without knowing the exact playlist or genre they want. Aurora reduces that decision to one short prompt such as:
+
+- `I feel angry and need to release it`
+- `I am feeling nostalgic and missing someone`
+- `I feel energetic and want something upbeat`
+- `I want something dreamy and whimsical`
+
+## The Solution
+
+Aurora combines:
+
+1. Free-text emotion input.
+2. Local emotion-word and synonym matching.
+3. Curated emotion playlist data.
+4. Time-of-day context.
+5. A ranked mix of up to 10 songs.
+
+The result is immediate and works entirely in the browser. No account, backend, external AI service, or API key is required.
+
+## Current Playlist Catalog
+
+The catalog contains 60 imported tracks across six emotion sets:
+
+| Emotion set | Tracks |
+| --- | ---: |
+| Melancholy | 10 |
+| Anger | 10 |
+| Yearning | 10 |
+| Energetic | 10 |
+| Guilty | 10 |
+| Whimsical | 10 |
+
+The source data is stored in `client/src/data/tracks.json`. Each track includes an ID, title, artist, album, duration when available, time tags, mood tags, and an audio URL field.
+
+The supplied YouTube Music URLs were not placed in the audio URL field because they are web pages, not direct audio files. The player correctly marks these tracks as unavailable instead of pretending they can play.
+
+## How Emotion Matching Works
+
+The matching engine is in `client/src/lib/playlist.js`.
+
+The user prompt is normalized by:
+
+- converting text to lowercase;
+- splitting it into words;
+- ignoring punctuation and unknown words;
+- converting recognized words into canonical emotion tags;
+- removing duplicate matches.
+
+Examples of supported mappings include:
+
+| User language | Canonical set |
+| --- | --- |
+| sad, down, lonely, heartbroken, tired | melancholy |
+| angry, mad, furious, annoyed, rage | anger |
+| longing, missing, miss, crave | yearning |
+| energetic, energy, lively, motivated | energetic |
+| guilty, guilt, regret, remorse, ashamed | guilty |
+| whimsical, playful, quirky, dreamy, magical | whimsical |
+
+The engine also keeps the earlier general vocabulary for words such as `focus`, `study`, `calm`, `happy`, `hyped`, `party`, and `stressed`, allowing more playlist sets to be added later without changing the core architecture.
+
+## Ranking Logic
+
+Every track receives a score:
+
+- `+2` when the track matches the current time of day;
+- `+3` for every matched mood tag.
+
+Tracks with a score above zero are sorted from highest to lowest score, and the first 10 are returned. If no recognized word matches, Aurora falls back to the catalog rather than showing an empty result.
+
+Time of day is detected automatically:
+
+- 05:00–11:59: morning
+- 12:00–16:59: afternoon
+- 17:00–20:59: evening
+- 21:00–04:59: night
+
+The imported emotion tracks currently carry all four time tags because their source playlists are emotion-based rather than time-based. This makes the emotion match the primary signal.
+
+## User Experience
+
+### Opening screen
+
+The app opens with an Aurora Borealis-inspired boot screen. It uses the project image asset, terminal-style typography, a boot message, and a prompt to continue by clicking or pressing any key.
+
+### Playlist generation
+
+The main screen contains:
+
+- the Aurora header and current date/time;
+- a free-text prompt field;
+- a `BUILD MIX` action;
+- the current time-of-day label;
+- the animated Aurora activity trace;
+- the generated track list;
+- a track details panel;
+- a fixed player bar.
+
+### Track list
+
+Each track row displays its position, title, artist, duration, and audio availability. Selecting a row highlights it and updates the details panel.
+
+### Track details
+
+The details panel shows title, artist, duration, time tags, mood tags, and whether audio is loaded.
+
+### Player controls
+
+The player bar includes previous, play/pause, and next controls. Navigation works through the generated mix. Play is disabled when a track has no playable audio URL, preventing a misleading or broken playback state.
+
+## Visual Design
+
+Aurora uses an Aurora Borealis visual direction:
+
+- a dark night-sky fallback background;
+- a supplied aurora landscape image;
+- teal, blue, and violet accent colors;
+- monospace typography for a monitoring-console feel;
+- translucent surfaces with backdrop blur;
+- restrained borders and compact information density.
+
+The interface is responsive. On small screens, the player controls and track information reflow without horizontal overflow.
+
+## Animation
+
+The activity trace is built as three SVG ridge layers in `client/src/components/AuroraTrace.jsx`.
+
+- The trace updates at approximately 12 frames per second.
+- X positions stay fixed.
+- The overall line does not translate on the X or Y axis.
+- Individual peak and trough heights change to morph the ridge shape in place.
+- The three layers are delayed by 0, 2, and 4 frames to avoid synchronized movement.
+- `prefers-reduced-motion` disables the ongoing animation and keeps the trace static.
+
+Other interface transitions use Framer Motion for page entry, list staggering, track selection, and player state changes.
+
+## Technical Architecture
+
+### Frontend
+
+- React 19
+- Vite 8
+- Tailwind CSS 4
+- Framer Motion 13
+- Oxlint
+
+### Application structure
+
+```text
+client/
+  src/
+    App.jsx                 Main application state and layout
+    api.js                  Local playlist data interface
+    data/tracks.json        Curated emotion catalog
+    lib/playlist.js         Emotion parsing and ranking logic
+    components/
+      AuroraTrace.jsx       Animated SVG activity trace
+      PlayerBar.jsx         Playback and navigation controls
+      SplashScreen.jsx      Opening screen
+      TrackDetailsPane.jsx  Selected track information
+      TrackRow.jsx           Playlist item
+    index.css               Theme tokens and animation styles
+```
+
+The application is fully static. `api.js` provides an API-shaped interface, but `fetchPlaylist` currently reads the bundled catalog and runs the matching logic locally. The repository also contains a server directory for possible future backend use, but the deployed client does not depend on it.
+
+## Why We Did Not Add a Free AI API
+
+The current rule-based approach is the better fit for this version:
+
+- no API key or account is needed;
+- no user emotion data leaves the browser;
+- no network latency is added to playlist generation;
+- results are predictable and easy to demonstrate;
+- the curated playlist sets already define the domain vocabulary.
+
+An AI API could become useful later for ambiguous or conversational prompts, but it should be an optional interpretation layer rather than the source of truth. A sensible future design would use AI to extract emotion tags, then validate those tags against the local catalog.
+
+## Playback Status
+
+The interface is playback-ready, but the imported source URLs are YouTube Music page URLs and cannot be used as direct `<audio>` sources. The app therefore keeps the catalog and selection experience functional while clearly showing `NO AUDIO` and disabling playback.
+
+To enable playback, each track can be given a legally available direct audio URL, such as an owned MP3/OGG asset or an approved streaming integration. No playlist matching code needs to change.
+
+## Deployment
+
+The app is deployed to GitHub Pages:
+
+https://shakeeluzma49-ctrl.github.io/Hackathon-Project/
+
+Deployment is automatic through `.github/workflows/deploy.yml` whenever changes are pushed to `main`.
+
+The workflow:
+
+1. Checks out the repository.
+2. Installs the client dependencies.
+3. Builds the Vite application.
+4. Uploads `client/dist` as a Pages artifact.
+5. Deploys the artifact to the `github-pages` environment.
+
+## Verification Completed
+
+The following checks pass locally:
+
+```bash
+cd client
+npm run lint
+npm run build
+```
+
+The deployed GitHub Actions workflow has also completed successfully after the latest changes.
+
+## Demonstration Flow
+
+For a hackathon presentation:
+
+1. Open Aurora and continue past the boot screen.
+2. Enter `I feel angry and need high energy`.
+3. Click `BUILD MIX`.
+4. Show the resulting Anger/Energetic-related interpretation and ranked track mix.
+5. Select a track to show the details panel.
+6. Enter `I am feeling dreamy and missing someone`.
+7. Build the new mix and show the Yearning/Whimsical interpretation.
+8. Point out the responsive layout and the animated three-layer activity trace.
+
+## Future Improvements
+
+- Add the remaining emotion batches as they become available.
+- Add multi-label playlist tags so one track can belong to multiple related emotions.
+- Add direct, legally licensed audio sources.
+- Add richer phrase matching for sentence-level context and negation.
+- Add an optional AI interpretation layer with local tag validation.
+- Add persistent user preferences and recently generated mixes.
+- Add automated unit tests for synonym extraction and ranking behavior.
+
+## Current Status
+
+Aurora is a working static hackathon prototype with a curated 60-track emotion catalog, local natural-language keyword matching, responsive UI, animated visual identity, disabled-state-safe playback controls, and automated GitHub Pages deployment.
