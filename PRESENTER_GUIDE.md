@@ -81,6 +81,18 @@ If no emotion is recognized, Aurora falls back to the catalog instead of returni
 
 Every track has a hardcoded YouTube video ID in `client/src/data/tracks.json`. The application builds an official YouTube embed URL from that ID and sends player commands through the iframe API-compatible postMessage interface.
 
+### Playback data flow
+
+1. A track row is selected from the locally generated mix.
+2. React stores the selected track and its exact `youtubeId`.
+3. The hidden YouTube iframe is recreated with that ID and `enablejsapi=1`.
+4. The embed loads the official YouTube video, while the Aurora player bar remains the visible control surface.
+5. Aurora sends a play command after the iframe is ready.
+6. The iframe reports player state, duration, current time, and ended events back to the app.
+7. React updates the title, artist, cover, progress bar, and controls from those events.
+
+The app never searches YouTube at playback time. This is deliberate: search results can point to lyric videos, advertisements, remixes, live performances, or unrelated uploads. Each catalog entry therefore uses a reviewed, hardcoded video ID intended to match the exact track.
+
 The app uses the embedded player for playback rather than downloading audio files. This avoids pretending that a YouTube page URL is a direct MP3 source and keeps the prototype within the platform's embed model.
 
 Playback behavior:
@@ -93,6 +105,30 @@ Playback behavior:
 - Shuffle selects another track from the current mix.
 - Next and previous navigate through the generated mix.
 - Missing durations display as `--` rather than falsely showing `0:00`.
+
+### Playback states
+
+- `Loading`: the selected video is being loaded; progress is reset and held.
+- `Playing`: YouTube confirms state `1`; the timer and progress bar advance from real player time.
+- `Paused`: the timer stops and the current position is preserved.
+- `Ended`: repeat replays the track, or next/shuffle selects another track.
+- `Unavailable`: the embed cannot play the video; the user can move to another track.
+
+The duration bar is not driven by a local timer. It uses the embedded player's reported duration and current time, so it does not run ahead while a video is buffering or loading. Seeking sends the selected percentage back to YouTube with a `seekTo` command.
+
+### Controls
+
+- **Play/Pause:** sends `playVideo` or `pauseVideo` to the active embed.
+- **Previous:** selects the previous item in the current mix, wrapping to the end.
+- **Next:** selects the next item, or a random different item when shuffle is enabled.
+- **Shuffle:** toggles randomized next-track behavior.
+- **Repeat:** toggles replaying the active track after it ends.
+- **Progress bar:** seeks within the confirmed YouTube duration.
+- **Autoplay:** selecting a track requests playback immediately; browser and YouTube policies may still require a user gesture.
+
+### Important platform boundary
+
+Aurora controls an embedded YouTube player. It does not extract, download, cache, or redistribute YouTube audio. YouTube may still show platform-controlled advertising or refuse an embed for a particular video. The app cannot remove those platform behaviors. A future licensed music provider would be required for guaranteed ad-free direct audio.
 
 The IDs were audited against YouTube's oEmbed endpoint and corrected where a guessed or outdated ID did not resolve. The latest audit confirmed all 108 hardcoded IDs resolve.
 
