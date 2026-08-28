@@ -5,9 +5,9 @@ const POINTS = 21;
 const FRAME_RATE = 1000 / 12;
 
 const LAYERS = [
-  { base: 26, amplitude: 5, phase: 0, stroke: "var(--color-accent-teal)", width: 1.5, className: "aurora-trace-path" },
-  { base: 24, amplitude: 8, phase: 1.8, stroke: "var(--color-accent)", width: 1.5, className: "aurora-trace-path is-delayed" },
-  { base: 22, amplitude: 6, phase: 3.4, stroke: "var(--color-accent-violet)", width: 1, opacity: 0.7, className: "aurora-trace-path is-more-delayed" },
+  { base: 26, amplitude: 5, phase: 0, delayFrames: 0, stroke: "var(--color-accent-teal)", width: 1.5, className: "aurora-trace-path" },
+  { base: 24, amplitude: 8, phase: 1.8, delayFrames: 2, stroke: "var(--color-accent)", width: 1.5, className: "aurora-trace-path is-delayed" },
+  { base: 22, amplitude: 6, phase: 3.4, delayFrames: 4, stroke: "var(--color-accent-violet)", width: 1, opacity: 0.7, className: "aurora-trace-path is-more-delayed" },
 ];
 
 function buildPath(base, amplitude, phase, frame) {
@@ -43,7 +43,7 @@ export default function AuroraTrace() {
       {LAYERS.map((layer) => (
         <path
           key={layer.className}
-          d={buildPath(layer.base, layer.amplitude, layer.phase, frame)}
+          d={buildPath(layer.base, layer.amplitude, layer.phase, frame - layer.delayFrames)}
           fill="none"
           stroke={layer.stroke}
           strokeWidth={layer.width}
