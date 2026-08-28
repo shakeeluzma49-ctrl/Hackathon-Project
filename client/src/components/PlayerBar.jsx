@@ -107,6 +107,9 @@ export default function PlayerBar({
           />
           <span>{formatTime(duration)}</span>
         </div>
+        <p className="mt-2 text-[9px] leading-4 text-text-muted/75">
+          YouTube embedded playback may include ads. Firefox with uBlock Origin may block them; Aurora does not control YouTube advertising.
+        </p>
       </div>
     </motion.div>
   );
