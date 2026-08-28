@@ -22,6 +22,13 @@ export default function PlayerBar({ track, isPlaying, onTogglePlay, onPrev, onNe
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.2, ease: EASE }}
             >
+              {track?.coverUrl && (
+                <img
+                  src={track.coverUrl}
+                  alt={`Album cover for ${track.title}`}
+                  className="mb-2 h-8 w-8 rounded object-cover sm:hidden"
+                />
+              )}
               <p className="truncate text-sm font-bold">{track ? track.title : "Nothing selected"}</p>
               <p className="truncate text-xs text-text-muted">{track ? track.artist : "—"}</p>
             </motion.div>

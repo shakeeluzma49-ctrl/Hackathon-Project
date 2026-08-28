@@ -27,20 +27,20 @@ The result is immediate and works entirely in the browser. No account, backend, 
 
 ## Current Playlist Catalog
 
-The catalog contains 68 imported tracks across six emotion sets:
+The catalog contains 108 imported tracks across six emotion sets:
 
 | Emotion set | Tracks |
 | --- | ---: |
 | Melancholy | 18 |
-| Anger | 10 |
-| Yearning | 10 |
-| Energetic | 10 |
-| Guilty | 10 |
-| Whimsical | 10 |
+| Anger | 18 |
+| Yearning | 18 |
+| Energetic | 18 |
+| Guilty | 18 |
+| Whimsical | 18 |
 
-The source data is stored in `client/src/data/tracks.json`. Each track includes an ID, title, artist, album, duration when available, time tags, mood tags, and an audio URL field.
+The source data is stored in `client/src/data/tracks.json`. Each track includes an ID, title, artist, album, duration when available, time tags, mood tags, a YouTube video ID, and an album cover URL.
 
-The supplied YouTube Music URLs are stored as YouTube video IDs. They are not placed in the native audio URL field because they are web pages, not direct audio files.
+The supplied YouTube Music URLs are stored as YouTube video IDs. They are not placed in the native audio URL field because they are web pages, not direct audio files. Album artwork is sourced from music-catalog artwork rather than YouTube thumbnails.
 
 ## How Emotion Matching Works
 
@@ -110,11 +110,11 @@ The main screen contains:
 
 ### Track list
 
-Each track row displays its position, title, artist, duration, and audio availability. Unknown durations display as `—`. Selecting a row highlights it and updates the details panel.
+Each track row displays its album cover, position, title, artist, duration, and audio availability. Unknown durations display as `—`. Selecting a row highlights it and updates the details panel.
 
 ### Track details
 
-The details panel shows title, artist, duration, time tags, mood tags, and whether audio is loaded.
+The details panel shows album cover, title, artist, duration, time tags, mood tags, and whether audio is loaded.
 
 ### Player controls
 
@@ -247,4 +247,4 @@ For a hackathon presentation:
 
 ## Current Status
 
-Aurora is a working static hackathon prototype with a curated 68-track emotion catalog, local natural-language keyword matching, responsive UI, animated visual identity, YouTube-backed playback controls, and automated GitHub Pages deployment.
+Aurora is a working static hackathon prototype with a curated 108-track emotion catalog, local natural-language keyword matching, album artwork, responsive UI, animated visual identity, YouTube-backed playback controls, and automated GitHub Pages deployment.

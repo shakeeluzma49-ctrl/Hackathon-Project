@@ -22,7 +22,7 @@ export default function TrackRow({ track, index, isActive, onSelect }) {
         onClick={() => onSelect(track)}
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
-        className={`grid w-full grid-cols-[3rem_1fr_auto] items-baseline gap-4 rounded-md py-3 text-left transition-colors hover:bg-surface-hover/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent ${
+        className={`grid w-full grid-cols-[2.75rem_3rem_minmax(0,1fr)_auto] items-center gap-3 rounded-md py-3 text-left transition-colors hover:bg-surface-hover/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent sm:grid-cols-[3rem_3.5rem_minmax(0,1fr)_auto] ${
           isActive ? "bg-surface-hover/60" : ""
         }`}
       >
@@ -31,6 +31,18 @@ export default function TrackRow({ track, index, isActive, onSelect }) {
         >
           {String(index + 1).padStart(2, "0")}
         </span>
+        {track.coverUrl ? (
+          <img
+            src={track.coverUrl}
+            alt={`Album cover for ${track.title}`}
+            className="h-12 w-12 rounded object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <span className="flex h-12 w-12 items-center justify-center rounded border border-border text-lg text-text-muted" aria-hidden="true">
+            ♪
+          </span>
+        )}
         <span className="min-w-0">
           <p className={`truncate text-sm ${isActive ? "font-bold text-accent" : "text-text"}`}>
             {track.title}

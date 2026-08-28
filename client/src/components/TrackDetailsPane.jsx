@@ -33,6 +33,17 @@ export default function TrackDetailsPane({ track }) {
           className="rounded-xl border border-border bg-surface/85 px-4 py-5 backdrop-blur-md"
         >
           <p className="mb-1 text-[11px] tracking-[0.15em] text-text-muted">TRACK DETAILS</p>
+          {track.coverUrl ? (
+            <img
+              src={track.coverUrl}
+              alt={`Album cover for ${track.title}`}
+              className="mb-4 aspect-square w-full rounded object-cover"
+            />
+          ) : (
+            <div className="mb-4 flex aspect-square w-full items-center justify-center rounded border border-border text-4xl text-text-muted" aria-hidden="true">
+              ♪
+            </div>
+          )}
           <h2 className="mb-1 text-xl font-bold">{track.title}</h2>
           <p className="mb-4 text-sm text-text-muted">{track.artist}</p>
 
