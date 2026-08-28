@@ -40,7 +40,7 @@ The catalog contains 60 imported tracks across six emotion sets:
 
 The source data is stored in `client/src/data/tracks.json`. Each track includes an ID, title, artist, album, duration when available, time tags, mood tags, and an audio URL field.
 
-The supplied YouTube Music URLs were not placed in the audio URL field because they are web pages, not direct audio files. The player correctly marks these tracks as unavailable instead of pretending they can play.
+The supplied YouTube Music URLs are stored as YouTube video IDs. They are not placed in the native audio URL field because they are web pages, not direct audio files.
 
 ## How Emotion Matching Works
 
@@ -114,7 +114,7 @@ The details panel shows title, artist, duration, time tags, mood tags, and wheth
 
 ### Player controls
 
-The player bar includes previous, play/pause, and next controls. Navigation works through the generated mix. Play is disabled when a track has no playable audio URL, preventing a misleading or broken playback state.
+The player bar includes previous, play/pause, and next controls. Navigation works through the generated mix. Play/pause commands are sent to the official YouTube embedded player while the app keeps its custom player interface.
 
 ## Visual Design
 
@@ -186,9 +186,9 @@ An AI API could become useful later for ambiguous or conversational prompts, but
 
 ## Playback Status
 
-The interface is playback-ready, but the imported source URLs are YouTube Music page URLs and cannot be used as direct `<audio>` sources. The app therefore keeps the catalog and selection experience functional while clearly showing `NO AUDIO` and disabling playback.
+The app now plays the imported tracks through YouTube's official IFrame Player API-compatible embed. Each imported URL is converted to its video ID, and the custom controls send play, pause, and navigation commands to the embedded player. The YouTube player remains visually minimized while the Aurora player bar provides the app's interface.
 
-To enable playback, each track can be given a legally available direct audio URL, such as an owned MP3/OGG asset or an approved streaming integration. No playlist matching code needs to change.
+This approach does not download or expose MP3 files. Playback still depends on the video being available on YouTube and allowed to play in an embed. A future licensed audio integration could replace the embed without changing playlist matching.
 
 ## Deployment
 
@@ -243,4 +243,4 @@ For a hackathon presentation:
 
 ## Current Status
 
-Aurora is a working static hackathon prototype with a curated 60-track emotion catalog, local natural-language keyword matching, responsive UI, animated visual identity, disabled-state-safe playback controls, and automated GitHub Pages deployment.
+Aurora is a working static hackathon prototype with a curated 60-track emotion catalog, local natural-language keyword matching, responsive UI, animated visual identity, YouTube-backed playback controls, and automated GitHub Pages deployment.
