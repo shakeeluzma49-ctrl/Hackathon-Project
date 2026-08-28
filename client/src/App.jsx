@@ -41,7 +41,7 @@ export default function App() {
   const [activeTrack, setActiveTrack] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [status, setStatus] = useState("ready");
-  const audioRef = useRef(null);
+  const playerFrameRef = useRef(null);
 
   async function loadPlaylist(nextKeywords) {
     setStatus("loading");
@@ -61,12 +61,17 @@ export default function App() {
 
   function selectTrack(track) {
     setActiveTrack(track);
-    setIsPlaying(Boolean(track.url));
+    setIsPlaying(false);
   }
 
   function handleTogglePlay() {
-    if (!activeTrack?.url) return;
-    setIsPlaying((prev) => !prev);
+    if (!activeTrack?.youtubeId || !playerFrameRef.current?.contentWindow) return;
+    const nextPlaying = !isPlaying;
+    playerFrameRef.current.contentWindow.postMessage(
+      JSON.stringify({ event: "command", func: nextPlaying ? "playVideo" : "pauseVideo", args: [] }),
+      "https://www.youtube.com",
+    );
+    setIsPlaying(nextPlaying);
   }
 
   function stepTrack(direction) {
@@ -78,10 +83,21 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (!audioRef.current) return;
-    if (isPlaying) audioRef.current.play().catch(() => setIsPlaying(false));
-    else audioRef.current.pause();
-  }, [isPlaying, activeTrack]);
+    function handlePlayerMessage(event) {
+      if (event.origin !== "https://www.youtube.com") return;
+      try {
+        const data = JSON.parse(event.data);
+        if (data.event !== "infoDelivery") return;
+        const playerState = data.info?.playerState;
+        if (playerState === 0 || playerState === 2) setIsPlaying(false);
+        if (playerState === 1) setIsPlaying(true);
+      } catch {
+        // Ignore unrelated postMessage events.
+      }
+    }
+    window.addEventListener("message", handlePlayerMessage);
+    return () => window.removeEventListener("message", handlePlayerMessage);
+  }, []);
 
   const reading = READING[playlist?.timeOfDay] ?? "READING";
   const isLoading = status === "loading";
@@ -204,11 +220,15 @@ export default function App() {
               )}
             </AnimatePresence>
 
-            <audio
-              ref={audioRef}
-              src={activeTrack?.url || undefined}
-              onEnded={() => setIsPlaying(false)}
-            />
+            {activeTrack?.youtubeId && (
+              <iframe
+                ref={playerFrameRef}
+                title={`${activeTrack.title} by ${activeTrack.artist}`}
+                src={`https://www.youtube.com/embed/${activeTrack.youtubeId}?enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}&playsinline=1&controls=1&rel=0`}
+                className="pointer-events-none absolute bottom-24 right-4 h-[200px] w-[200px] opacity-0"
+                allow="autoplay; encrypted-media"
+              />
+            )}
           </motion.div>
 
           <PlayerBar
@@ -218,6 +238,7 @@ export default function App() {
             onPrev={() => stepTrack(-1)}
             onNext={() => stepTrack(1)}
             canNavigate={canNavigate}
+            canPlay={Boolean(activeTrack?.youtubeId)}
           />
         </motion.div>
       )}

@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const EASE = [0.16, 1, 0.3, 1];
 
-export default function PlayerBar({ track, isPlaying, onTogglePlay, onPrev, onNext, canNavigate }) {
-  const hasAudio = Boolean(track?.url);
+export default function PlayerBar({ track, isPlaying, onTogglePlay, onPrev, onNext, canNavigate, canPlay }) {
+  const hasAudio = Boolean(track?.youtubeId) && canPlay;
 
   return (
     <motion.div
@@ -51,7 +51,7 @@ export default function PlayerBar({ track, isPlaying, onTogglePlay, onPrev, onNe
             whileTap={hasAudio ? { scale: 0.92 } : {}}
             transition={{ duration: 0.15, ease: EASE }}
             className="flex h-14 w-14 items-center justify-center rounded-full border border-accent bg-accent text-on-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-30"
-            title={hasAudio ? (isPlaying ? "Pause" : "Play") : "No audio file loaded yet"}
+            title={hasAudio ? (isPlaying ? "Pause" : "Play") : "YouTube player loading"}
           >
             <AnimatePresence mode="wait" initial={false}>
               {isPlaying ? (

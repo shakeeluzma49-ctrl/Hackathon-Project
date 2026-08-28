@@ -51,7 +51,7 @@ export default function TrackDetailsPane({ track }) {
             </div>
             <div className="flex justify-between border-t border-border pt-2">
               <dt className="text-text-muted">Audio</dt>
-              <dd>{track.url ? "Loaded" : "Not wired up yet"}</dd>
+              <dd>{track.youtubeId ? "YouTube" : track.url ? "Loaded" : "Not wired up yet"}</dd>
             </div>
           </dl>
         </motion.div>

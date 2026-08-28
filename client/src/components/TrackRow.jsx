@@ -12,7 +12,7 @@ const item = {
 };
 
 export default function TrackRow({ track, index, isActive, onSelect }) {
-  const hasAudio = Boolean(track.url);
+  const hasAudio = Boolean(track.youtubeId || track.url);
 
   return (
     <motion.li variants={item} className="border-b border-border last:border-b-0">
