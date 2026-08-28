@@ -65,6 +65,8 @@ Examples of supported mappings include:
 | guilty, guilt, regret, remorse, ashamed | guilty |
 | whimsical, playful, quirky, dreamy, magical | whimsical |
 
+The parser works inside complete sentences, not only with one-word prompts. For example, `I'm feeling stressed today` is normalized into words, recognizes `stressed`, and selects the stress-related track set.
+
 The engine also keeps the earlier general vocabulary for words such as `focus`, `study`, `calm`, `happy`, `hyped`, `party`, and `stressed`, allowing more playlist sets to be added later without changing the core architecture.
 
 ## Ranking Logic
@@ -75,6 +77,8 @@ Every track receives a score:
 - `+3` for every matched mood tag.
 
 Tracks with a score above zero are sorted from highest to lowest score, and the first 10 are returned. If no recognized word matches, Aurora falls back to the catalog rather than showing an empty result.
+
+After the relevant top matches are selected, the returned tracks are shuffled with an in-browser Fisher-Yates shuffle. Repeating the same search therefore produces a fresh-looking ordering while keeping the strongest matches in the result pool.
 
 Time of day is detected automatically:
 
@@ -106,7 +110,7 @@ The main screen contains:
 
 ### Track list
 
-Each track row displays its position, title, artist, duration, and audio availability. Selecting a row highlights it and updates the details panel.
+Each track row displays its position, title, artist, duration, and audio availability. Unknown durations display as `—`. Selecting a row highlights it and updates the details panel.
 
 ### Track details
 

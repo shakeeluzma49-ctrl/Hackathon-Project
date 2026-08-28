@@ -65,6 +65,11 @@ const SYNONYMS = {
 
 const TIME_TAGS = ["morning", "afternoon", "evening", "night"];
 
+const RELATED_MOODS = {
+  stressed: ["melancholy"],
+  sad: ["melancholy"],
+};
+
 export function timeOfDayFromHour(hour) {
   if (hour >= 5 && hour < 12) return "morning";
   if (hour >= 12 && hour < 17) return "afternoon";
@@ -89,9 +94,21 @@ function scoreTrack(track, timeOfDay, moodTags) {
   let score = 0;
   if (track.timeTags.includes(timeOfDay)) score += 2;
   for (const mood of moodTags) {
-    if (track.moodTags.includes(mood)) score += 3;
+    const relatedMoods = RELATED_MOODS[mood] ?? [];
+    if (track.moodTags.includes(mood) || relatedMoods.some((related) => track.moodTags.includes(related))) {
+      score += 3;
+    }
   }
   return score;
+}
+
+function shuffle(items) {
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
 }
 
 export function buildPlaylist(tracks, { timeOfDay, keywords, limit = 10 }) {
@@ -106,10 +123,11 @@ export function buildPlaylist(tracks, { timeOfDay, keywords, limit = 10 }) {
   // No matches (e.g. keywords with no known synonym): fall back to the full catalog
   // rather than returning an empty playlist.
   const results = scored.length > 0 ? scored : tracks.map((track) => ({ track, score: 0 }));
+  const topMatches = results.slice(0, limit);
 
   return {
     timeOfDay: resolvedTimeOfDay,
     matchedMoods: moodTags,
-    tracks: results.slice(0, limit).map(({ track }) => track),
+    tracks: shuffle(topMatches).map(({ track }) => track),
   };
 }
