@@ -27,11 +27,11 @@ The result is immediate and works entirely in the browser. No account, backend, 
 
 ## Current Playlist Catalog
 
-The catalog contains 60 imported tracks across six emotion sets:
+The catalog contains 68 imported tracks across six emotion sets:
 
 | Emotion set | Tracks |
 | --- | ---: |
-| Melancholy | 10 |
+| Melancholy | 18 |
 | Anger | 10 |
 | Yearning | 10 |
 | Energetic | 10 |
@@ -247,4 +247,4 @@ For a hackathon presentation:
 
 ## Current Status
 
-Aurora is a working static hackathon prototype with a curated 60-track emotion catalog, local natural-language keyword matching, responsive UI, animated visual identity, YouTube-backed playback controls, and automated GitHub Pages deployment.
+Aurora is a working static hackathon prototype with a curated 68-track emotion catalog, local natural-language keyword matching, responsive UI, animated visual identity, YouTube-backed playback controls, and automated GitHub Pages deployment.
