@@ -34,7 +34,7 @@ export default function SplashScreen({ onContinue }) {
         transition={{ duration: 0.5, ease: EASE, delay: 0.1 }}
         className="mb-6 text-xs tracking-[0.3em] text-text-muted"
       >
-        AURORA MONITOR — BOOT
+        YOUR MOOD, IN MUSIC
       </motion.p>
       <motion.h1
         initial={{ opacity: 0, y: 14 }}
