@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import TrackRow from "./components/TrackRow.jsx";
 import TrackDetailsPane from "./components/TrackDetailsPane.jsx";
@@ -62,24 +62,24 @@ export default function App() {
     loadPlaylist(keywords);
   }
 
-  function selectTrack(track) {
+  const selectTrack = useCallback((track) => {
     setActiveTrack(track);
     setProgress({ current: 0, duration: track.durationSec ?? 0 });
     setIsPlaying(Boolean(track.youtubeId));
-  }
+  }, []);
 
-  function sendPlayerCommand(func, args = []) {
+  const sendPlayerCommand = useCallback((func, args = []) => {
     playerFrameRef.current?.contentWindow?.postMessage(
       JSON.stringify({ event: "command", func, args }),
       "https://www.youtube.com",
     );
-  }
+  }, []);
 
   function handleTogglePlay() {
     if (!activeTrack?.youtubeId || !playerFrameRef.current?.contentWindow) return;
     const nextPlaying = !isPlaying;
     sendPlayerCommand(nextPlaying ? "playVideo" : "pauseVideo");
-    setIsPlaying(nextPlaying);
+    if (!nextPlaying) setIsPlaying(false);
   }
 
   function handleSeek(event) {
@@ -88,14 +88,21 @@ export default function App() {
     sendPlayerCommand("seekTo", [nextTime, true]);
   }
 
-  function stepTrack(direction) {
+  const advanceTrack = useCallback((direction) => {
     if (!playlist || !activeTrack) return;
     const tracks = playlist.tracks;
     const currentIndex = tracks.findIndex((t) => t.id === activeTrack.id);
-    const nextIndex = isShuffle && direction > 0
-      ? Math.floor(Math.random() * tracks.length)
-      : (currentIndex + direction + tracks.length) % tracks.length;
+    let nextIndex = (currentIndex + direction + tracks.length) % tracks.length;
+    if (isShuffle && direction > 0 && tracks.length > 1) {
+      do {
+        nextIndex = Math.floor(Math.random() * tracks.length);
+      } while (nextIndex === currentIndex);
+    }
     selectTrack(tracks[nextIndex]);
+  }, [activeTrack, isShuffle, playlist, selectTrack]);
+
+  function stepTrack(direction) {
+    advanceTrack(direction);
   }
 
   useEffect(() => {
@@ -119,9 +126,7 @@ export default function App() {
             sendPlayerCommand("playVideo");
             setProgress((current) => ({ ...current, current: 0 }));
             setIsPlaying(true);
-          } else {
-            setIsPlaying(false);
-          }
+          } else advanceTrack(1);
         }
         if (playerState === 2) setIsPlaying(false);
         if (playerState === 1) setIsPlaying(true);
@@ -131,7 +136,7 @@ export default function App() {
     }
     window.addEventListener("message", handlePlayerMessage);
     return () => window.removeEventListener("message", handlePlayerMessage);
-  }, [isRepeat]);
+  }, [isRepeat, isShuffle, activeTrack, playlist, advanceTrack, sendPlayerCommand]);
 
   useEffect(() => {
     if (!isPlaying) return undefined;
